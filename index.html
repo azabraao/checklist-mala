@@ -51,7 +51,8 @@
   .actions button:active { opacity: .5; }
   .actions button.quiet { color: var(--muted); }
 
-  #groups { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; align-items: start; }
+  #groups { display: flex; gap: 20px; align-items: flex-start; }
+  #groups .col { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 20px; }
   section { --tint: var(--blue); }
   section h2 { font-size: 15px; font-weight: 600; margin: 0 0 8px; padding: 0 4px; display: flex; align-items: center; gap: 10px; }
   section h2 .icon { width: 30px; height: 30px; border-radius: 8px; background: var(--tint); color: #fff; display: grid; place-items: center; font-size: 16px; flex: none; }
@@ -215,6 +216,23 @@ function setChecked(items, val) { for (const it of items) { if (val) state.check
 
 // ---------- render ----------
 const groupsEl = document.getElementById('groups');
+// Masonry: CSS grid alinha em linhas e deixa buracos; CSS columns não usa a última coluna quando as seções
+// não podem quebrar. Distribui cada seção para a coluna mais curta; recalcula só quando o nº de colunas muda.
+const colCount = () => Math.max(1, Math.floor((groupsEl.clientWidth + 20) / 340));
+let currentCols = 0;
+function layout(force) {
+  const cols = colCount();
+  if (!force && cols === currentCols) return;
+  currentCols = cols;
+  const sections = [...groupsEl.querySelectorAll('section')];
+  const columns = Array.from({ length: cols }, () => { const d = document.createElement('div'); d.className = 'col'; return d; });
+  const heights = columns.map(() => 0);
+  const measured = sections.map(sec => ({ sec, h: sec.offsetHeight }));
+  for (const { sec, h } of measured) { const i = heights.indexOf(Math.min(...heights)); columns[i].appendChild(sec); heights[i] += h + 20; }
+  groupsEl.replaceChildren(...columns);
+}
+let resizeTimer;
+window.addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(() => layout(false), 150); });
 function render() {
   document.getElementById('restore').hidden = !Object.keys(state.removed).length;
   let total = 0, done = 0;
@@ -275,6 +293,7 @@ function render() {
     sec.appendChild(box);
     groupsEl.appendChild(sec);
   }
+  layout(true);
   document.getElementById('progress').textContent = `${done} de ${total}`;
   document.getElementById('bar').style.width = total ? (100 * done / total) + '%' : '0%';
 }
