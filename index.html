@@ -11,87 +11,78 @@
 <title>Mala Nômade</title>
 <style>
   :root {
-    --bg: #F2F2F7; --card: #FFFFFF; --text: #000000; --secondary: #3C3C43; --muted: rgba(60,60,67,.6);
-    --sep: rgba(60,60,67,.29); --fill: rgba(120,120,128,.12); --blue: #007AFF; --green: #34C759; --red: #FF3B30;
+    --bg: #F2F2F7; --card: #FFFFFF; --text: #000000; --muted: rgba(60,60,67,.6);
+    --sep: rgba(60,60,67,.29); --fill: rgba(120,120,128,.12); --blue: #007AFF; --red: #FF3B30;
+    --c-blue: #007AFF; --c-purple: #AF52DE; --c-orange: #FF9500; --c-green: #34C759; --c-pink: #FF2D55;
     --radius: 12px;
   }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
-      --bg: #000000; --card: #1C1C1E; --text: #FFFFFF; --secondary: #EBEBF5; --muted: rgba(235,235,245,.6);
-      --sep: rgba(84,84,88,.6); --fill: rgba(118,118,128,.24); --blue: #0A84FF; --green: #30D158; --red: #FF453A;
+      --bg: #000000; --card: #1C1C1E; --text: #FFFFFF; --muted: rgba(235,235,245,.6);
+      --sep: rgba(84,84,88,.6); --fill: rgba(118,118,128,.24); --blue: #0A84FF; --red: #FF453A;
+      --c-blue: #0A84FF; --c-purple: #BF5AF2; --c-orange: #FF9F0A; --c-green: #30D158; --c-pink: #FF375F;
     }
   }
   :root[data-theme="dark"] {
-    --bg: #000000; --card: #1C1C1E; --text: #FFFFFF; --secondary: #EBEBF5; --muted: rgba(235,235,245,.6);
-    --sep: rgba(84,84,88,.6); --fill: rgba(118,118,128,.24); --blue: #0A84FF; --green: #30D158; --red: #FF453A;
+    --bg: #000000; --card: #1C1C1E; --text: #FFFFFF; --muted: rgba(235,235,245,.6);
+    --sep: rgba(84,84,88,.6); --fill: rgba(118,118,128,.24); --blue: #0A84FF; --red: #FF453A;
+    --c-blue: #0A84FF; --c-purple: #BF5AF2; --c-orange: #FF9F0A; --c-green: #30D158; --c-pink: #FF375F;
   }
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html, body { margin: 0; background: var(--bg); color: var(--text);
     font: 17px/1.3 -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Inter, Roboto, sans-serif;
     -webkit-font-smoothing: antialiased; -webkit-text-size-adjust: 100%; }
-  main { max-width: 600px; margin: 0 auto;
-    padding: calc(env(safe-area-inset-top) + 16px) calc(env(safe-area-inset-right) + 16px)
-             calc(env(safe-area-inset-bottom) + 48px) calc(env(safe-area-inset-left) + 16px); }
-  header { margin-bottom: 4px; }
+  main { padding: calc(env(safe-area-inset-top) + 16px) calc(env(safe-area-inset-right) + 16px)
+                  calc(env(safe-area-inset-bottom) + 48px) calc(env(safe-area-inset-left) + 16px); }
+  @media (min-width: 900px) { main { padding-left: 32px; padding-right: 32px; } }
+  header { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 16px; }
   h1 { font-size: 34px; font-weight: 700; letter-spacing: .37px; margin: 0; line-height: 41px; }
-  .progress { font-size: 15px; color: var(--muted); margin: 2px 0 10px; }
-  .bar { height: 4px; background: var(--fill); border-radius: 2px; overflow: hidden; margin-bottom: 20px; }
+  .progress { font-size: 15px; color: var(--muted); }
+  .bar { height: 4px; background: var(--fill); border-radius: 2px; overflow: hidden; margin: 8px 0 16px; }
   .bar > div { height: 100%; background: var(--blue); width: 0; transition: width .25s ease; border-radius: 2px; }
 
-  .stepper { flex: none; display: inline-flex; align-items: center; background: var(--fill); border-radius: 8px; height: 30px; }
-  .stepper button { width: 32px; height: 30px; border: 0; background: none; color: var(--blue); font: inherit; font-size: 19px; line-height: 1; cursor: pointer; }
-  .stepper button:disabled { color: var(--muted); opacity: .4; }
-  .stepper button:active { opacity: .5; }
-  .stepper output { min-width: 26px; text-align: center; font-size: 15px; font-weight: 600; font-variant-numeric: tabular-nums; }
-  .controls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 16px; }
-  .days { display: flex; align-items: center; gap: 8px; background: var(--card); border-radius: 10px;
-    padding: 0 6px 0 14px; min-height: 44px; font-size: 17px; }
-  .days input { width: 48px; min-height: 36px; border: 0; background: var(--fill); border-radius: 8px; color: var(--text);
-    font: inherit; font-weight: 600; text-align: center; -moz-appearance: textfield; }
-  .days input::-webkit-inner-spin-button, .days input::-webkit-outer-spin-button { -webkit-appearance: none; }
-  .days input:focus { outline: 2px solid var(--blue); outline-offset: 0; }
-  .toggle { border: 0; background: var(--card); color: var(--text); border-radius: 10px; min-height: 44px;
-    padding: 0 14px; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer; transition: background .15s, color .15s; }
-  .toggle:active { opacity: .7; }
-  .toggle[aria-pressed="true"] { background: var(--blue); color: #fff; font-weight: 600; }
-
-  .actions { display: flex; gap: 20px; margin: 0 4px 12px; }
-  .actions button { border: 0; background: none; color: var(--blue); font: inherit; font-size: 15px; padding: 0;
-    min-height: 32px; cursor: pointer; }
+  .actions { display: flex; gap: 20px; margin: 0 4px 16px; }
+  .actions button { border: 0; background: none; color: var(--blue); font: inherit; font-size: 15px; padding: 0; min-height: 32px; cursor: pointer; }
   .actions button:active { opacity: .5; }
   .actions button.quiet { color: var(--muted); }
 
-  section { margin-bottom: 24px; }
-  section h2 { font-size: 13px; font-weight: 400; text-transform: uppercase; letter-spacing: -.08px; color: var(--muted);
-    margin: 0; padding: 0 16px 6px; display: flex; justify-content: space-between; }
-  section h2 span { text-transform: none; font-variant-numeric: tabular-nums; }
+  #groups { display: grid; gap: 20px; }
+  section { --tint: var(--blue); }
+  section h2 { font-size: 15px; font-weight: 600; margin: 0 0 8px; padding: 0 4px; display: flex; align-items: center; gap: 10px; }
+  section h2 .icon { width: 30px; height: 30px; border-radius: 8px; background: var(--tint); color: #fff; display: grid; place-items: center; font-size: 16px; flex: none; }
+  section h2 .title { flex: 1; }
+  section h2 .count { font-size: 13px; font-weight: 400; color: var(--muted); font-variant-numeric: tabular-nums; }
+  section h2 .all { border: 0; background: none; padding: 0 4px; cursor: pointer; display: flex; align-items: center; min-height: 32px; }
   .group { background: var(--card); border-radius: var(--radius); overflow: hidden; }
-  ul { list-style: none; margin: 0; padding: 0; }
-  li { display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 16px 0 16px; position: relative; }
-  li + li::before, footer.add::before { content: ""; position: absolute; left: 52px; right: 0; top: 0; height: 1px; background: var(--sep); }
+  ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+  li { position: relative; display: flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 14px; background: var(--card); box-shadow: inset 0 -1px 0 var(--sep), inset -1px 0 0 var(--sep); }
   li input[type=checkbox] { position: absolute; opacity: 0; width: 1px; height: 1px; }
-  .check { flex: none; width: 24px; height: 24px; border-radius: 50%; border: 1.5px solid var(--muted); display: grid;
-    place-items: center; transition: background .15s, border-color .15s; }
+  .check { flex: none; width: 24px; height: 24px; border-radius: 50%; border: 1.5px solid var(--muted); display: grid; place-items: center; transition: background .15s, border-color .15s, transform .1s; }
   .check::after { content: ""; width: 6px; height: 11px; border: solid #fff; border-width: 0 2px 2px 0; transform: rotate(45deg) translate(-1px,-1px); opacity: 0; }
-  li.done .check { background: var(--blue); border-color: var(--blue); }
-  li.done .check::after { opacity: 1; }
-  li label { flex: 1; display: flex; align-items: center; gap: 12px; min-height: 44px; padding: 10px 0; cursor: pointer; user-select: none; }
+  .done .check { background: var(--tint); border-color: var(--tint); }
+  .done .check::after { opacity: 1; }
+  li label { flex: 1; display: flex; align-items: center; gap: 10px; min-height: 48px; padding: 10px 0; cursor: pointer; user-select: none; min-width: 0; }
   li label:active .check { transform: scale(.92); }
+  .name { overflow-wrap: anywhere; }
   li.done .name { color: var(--muted); }
-  .qty { font-variant-numeric: tabular-nums; color: var(--muted); }
-  .remove { border: 0; background: none; color: var(--muted); font-size: 22px; line-height: 1; cursor: pointer;
-    width: 32px; min-height: 44px; margin-right: -8px; opacity: 0; transition: opacity .15s; }
+  .qty { color: var(--tint); font-weight: 600; font-variant-numeric: tabular-nums; }
+  li.done .qty { color: var(--muted); }
+  .tools { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); display: flex; align-items: center; gap: 2px; padding-left: 24px;
+    background: linear-gradient(90deg, transparent, var(--card) 24px); opacity: 0; pointer-events: none; transition: opacity .15s; }
+  li:hover .tools, li:focus-within .tools { opacity: 1; pointer-events: auto; }
+  @media (hover: none) { .tools { position: static; transform: none; opacity: 1; pointer-events: auto; padding-left: 0; background: none; } }
+  .stepper { display: inline-flex; align-items: center; background: var(--fill); border-radius: 8px; height: 30px; }
+  .stepper button { width: 32px; height: 30px; border: 0; background: none; color: var(--blue); font: inherit; font-size: 19px; line-height: 1; cursor: pointer; }
+  .stepper button:disabled { color: var(--muted); opacity: .4; }
+  .stepper output { min-width: 26px; text-align: center; font-size: 15px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .remove { border: 0; background: none; color: var(--muted); font-size: 22px; line-height: 1; cursor: pointer; width: 32px; min-height: 44px; }
   .remove:hover { color: var(--red); }
-  li:hover .remove, li:focus-within .remove { opacity: 1; }
-  @media (hover: none) { .remove { opacity: .45; } }
-  footer.add { position: relative; display: flex; align-items: center; gap: 12px; min-height: 44px; padding: 0 16px; }
-  footer.add .plus { flex: none; width: 24px; height: 24px; border-radius: 50%; background: var(--fill); color: var(--blue);
-    display: grid; place-items: center; font-size: 18px; line-height: 1; }
-  footer.add input { flex: 1; min-height: 44px; border: 0; background: transparent; color: var(--text); font: inherit; }
+  footer.add { display: flex; align-items: center; gap: 12px; min-height: 48px; padding: 0 16px; border-top: 1px solid var(--sep); }
+  footer.add .plus { flex: none; width: 24px; height: 24px; border-radius: 50%; background: var(--fill); color: var(--tint); display: grid; place-items: center; font-size: 18px; line-height: 1; }
+  footer.add input { flex: 1; min-height: 44px; border: 0; background: transparent; color: var(--text); font: inherit; min-width: 0; }
   footer.add input:focus { outline: none; }
   footer.add input::placeholder { color: var(--muted); }
-  footer.add button { border: 0; background: none; color: var(--blue); font: inherit; font-size: 15px; font-weight: 600;
-    cursor: pointer; min-height: 44px; padding: 0 4px; }
+  footer.add button { border: 0; background: none; color: var(--tint); font: inherit; font-size: 15px; font-weight: 600; cursor: pointer; min-height: 44px; padding: 0 4px; }
   footer.add button:disabled { opacity: 0; pointer-events: none; }
   .empty { padding: 12px 16px; color: var(--muted); font-size: 15px; }
 </style>
@@ -116,39 +107,37 @@
 <script>
 // ---------- dados: [nome, quantidade padrão] ----------
 const GROUPS = [
-  { id: 'documentos', title: 'Documentos', items: [
+  { id: 'documentos', title: 'Documentos', icon: '🪪', tint: 'var(--c-blue)', items: [
     ['passaporte'], ['RG ou CNH'], ['cartão de crédito'], ['cartão de débito'], ['cartão internacional habilitado'],
     ['seguro viagem'], ['comprovante de vacina internacional'], ['carteira'], ['dinheiro em espécie'],
   ]},
-  { id: 'roupas', title: 'Roupas', items: [
-    ['cueca', 7], ['meia', 7], ['camisa', 7], ['calça', 3], ['short', 3], ['bermuda', 2], ['sunga', 1],
-    ['pijama', 1], ['roupa de academia', 3], ['blusa de frio', 2], ['calça para frio', 1], ['touca', 1], ['cachecol', 1],
-    ['boné', 1], ['sapato', 1], ['tênis apropriado (trekking, corrida)', 1], ['sandália', 1], ['chinelo', 1],
-    ['capa de chuva ou corta-vento', 1],
+  { id: 'roupas', title: 'Roupas', icon: '👕', tint: 'var(--c-purple)', items: [
+    ['cueca', 7], ['meia', 7], ['camisa', 5], ['calça', 2], ['bermuda', 2], ['sunga', 1],
+    ['blusa de frio', 2], ['calça para frio', 1], ['boné', 1], ['chinelo', 1], ['tênis apropriado (academia, passear)', 1],
   ]},
-  { id: 'eletronicos', title: 'Eletrônicos', items: [
+  { id: 'eletronicos', title: 'Eletrônicos', icon: '🔌', tint: 'var(--c-orange)', items: [
     ['notebook'], ['carregador do notebook'], ['celular'], ['carregador do celular'], ['relógio'], ['carregador do relógio'],
-    ['power bank carregado'], ['fones de ouvido carregados'], ['Kindle carregado'], ['adaptador de tomada'],
+    ['power bank carregado'], ['fones de ouvido carregados'], ['Kindle carregado'], ['adaptador global + GaN'],
   ]},
-  { id: 'higiene', title: 'Higiene e saúde', items: [
+  { id: 'higiene', title: 'Higiene e saúde', icon: '🧴', tint: 'var(--c-green)', items: [
     ['escova de dente'], ['pasta de dente'], ['fio dental'], ['desodorante'], ['shampoo e condicionador'], ['perfume'],
     ['produtos de beleza'], ['remédios'], ['suplementos vitamínicos'], ['cotonete'], ['cortador de unha'],
-    ['protetor solar'], ['repelente'], ['lenço umedecido'], ['kit de primeiros socorros'],
+    ['protetor solar'], ['lenço umedecido'], ['kit de primeiros socorros'],
   ]},
-  { id: 'diversos', title: 'Diversos', items: [
-    ['óculos'], ['garrafa de água'], ['livro'], ['caderno de anotações'], ['caneta'], ['baralho'],
-    ['travesseiro de pescoço'], ['mochila leve'], ['guarda-chuva'], ['lanterna (headlamp de preferência)'],
-    ['toalha de secagem rápida'], ['snacks'], ['apps offline (mapa, tradutor, reservas)'],
+  { id: 'diversos', title: 'Diversos', icon: '🎒', tint: 'var(--c-pink)', items: [
+    ['óculos'], ['garrafa de água'], ['caderno de anotações'], ['caneta'],
+    ['apps offline (mapa, tradutor, reservas)'], ['internet no lugar de destino'],
   ]},
 ];
 
 // ---------- plural PT-BR ----------
-const PLURAL_EXC = { 'boné': 'bonés', 'cachecol': 'cachecóis', 'short': 'shorts', 'tênis apropriado (trekking, corrida)': 'tênis apropriados (trekking, corrida)',
-  'roupa de academia': 'roupas de academia', 'capa de chuva ou corta-vento': 'capas de chuva ou corta-ventos', 'RG ou CNH': 'RG ou CNH',
-  'apps offline (mapa, tradutor, reservas)': 'apps offline (mapa, tradutor, reservas)', 'snacks': 'snacks', 'óculos': 'óculos',
+const PLURAL_EXC = { 'boné': 'bonés', 'cachecol': 'cachecóis', 'short': 'shorts',
+  'tênis apropriado (academia, passear)': 'tênis apropriados (academia, passear)', 'roupa de academia': 'roupas de academia',
+  'RG ou CNH': 'RG ou CNH', 'apps offline (mapa, tradutor, reservas)': 'apps offline (mapa, tradutor, reservas)', 'óculos': 'óculos',
   'shampoo e condicionador': 'shampoos e condicionadores', 'produtos de beleza': 'produtos de beleza', 'remédios': 'remédios',
   'suplementos vitamínicos': 'suplementos vitamínicos', 'fones de ouvido carregados': 'fones de ouvido carregados',
-  'dinheiro em espécie': 'dinheiro em espécie' };
+  'dinheiro em espécie': 'dinheiro em espécie', 'adaptador global + GaN': 'adaptadores globais + GaN',
+  'internet no lugar de destino': 'internet no lugar de destino' };
 function pluralWord(w) {
   if (/ão$/.test(w)) return w.replace(/ão$/, 'ões');
   if (/[rz]$/.test(w)) return w + 'es';
@@ -162,14 +151,14 @@ function pluralWord(w) {
 }
 function plural(name) {
   if (PLURAL_EXC[name]) return PLURAL_EXC[name];
-  const m = /^(.*?)(\s(?:de|da|do|para|pra|com|ou|em)\s.*|\s\(.*)$/.exec(name);
+  const m = /^(.*?)(\s(?:de|da|do|para|pra|com|ou|em|no|na)\s.*|\s\(.*)$/.exec(name);
   const head = m ? m[1] : name, tail = m ? m[2] : '';
   return head.split(' ').map(pluralWord).join(' ') + tail;
 }
 const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
 
 // ---------- estado ----------
-const KEY = 'checklist-mala:v2';
+const KEY = 'checklist-mala:v3';
 const defaultState = () => ({ checked: {}, removed: {}, custom: {}, qty: {} });
 let state = defaultState();
 try { const saved = JSON.parse(localStorage.getItem(KEY)); if (saved) state = { ...defaultState(), ...saved }; } catch (e) {}
@@ -180,6 +169,7 @@ function itemsOf(group) {
   const custom = (state.custom[group.id] || []).map(c => ({ id: group.id + ':' + c.name, name: c.name, defaultQty: 1, custom: true }));
   return [...base, ...custom].filter(it => !state.removed[it.id]).map(it => ({ ...it, qty: state.qty[it.id] ?? it.defaultQty }));
 }
+function setChecked(items, val) { for (const it of items) { if (val) state.checked[it.id] = true; else delete state.checked[it.id]; } save(); render(); }
 
 // ---------- render ----------
 const groupsEl = document.getElementById('groups');
@@ -189,10 +179,17 @@ function render() {
   groupsEl.innerHTML = '';
   for (const g of GROUPS) {
     const items = itemsOf(g);
-    const sec = document.createElement('section');
     const doneHere = items.filter(i => state.checked[i.id]).length;
+    const allDone = items.length > 0 && doneHere === items.length;
     total += items.length; done += doneHere;
-    sec.innerHTML = `<h2>${g.title}<span>${doneHere} de ${items.length}</span></h2>`;
+
+    const sec = document.createElement('section');
+    sec.style.setProperty('--tint', g.tint);
+    sec.innerHTML = `<h2><span class="icon" aria-hidden="true">${g.icon}</span><span class="title">${g.title}</span>
+      <span class="count">${doneHere} de ${items.length}</span>
+      <button class="all ${allDone ? 'done' : ''}" aria-label="${allDone ? 'Desmarcar' : 'Marcar'} todo o bloco ${g.title}"><span class="check" aria-hidden="true"></span></button></h2>`;
+    sec.querySelector('.all').addEventListener('click', () => setChecked(items, !allDone));
+
     const box = document.createElement('div'); box.className = 'group';
     const ul = document.createElement('ul');
     for (const it of items) {
@@ -201,11 +198,13 @@ function render() {
       li.className = state.checked[it.id] ? 'done' : '';
       const cid = 'c-' + it.id.replace(/[^\w-]/g, '_');
       li.innerHTML = `<input type="checkbox" id="${cid}" ${state.checked[it.id] ? 'checked' : ''}>
-        <label for="${cid}"><span class="check" aria-hidden="true"></span><span class="name">${cap(label)}</span></label>
-        <div class="stepper" aria-label="Quantidade de ${it.name}">
-          <button class="dec" aria-label="Menos" ${it.qty <= 1 ? 'disabled' : ''}>−</button><output>${it.qty}</output><button class="inc" aria-label="Mais">+</button>
-        </div>
-        <button class="remove" aria-label="Remover ${it.name}">×</button>`;
+        <label for="${cid}"><span class="check" aria-hidden="true"></span><span class="name"><span class="qty">${it.qty}</span> ${cap(label)}</span></label>
+        <div class="tools">
+          <div class="stepper" aria-label="Quantidade de ${it.name}">
+            <button class="dec" aria-label="Menos" ${it.qty <= 1 ? 'disabled' : ''}>−</button><output>${it.qty}</output><button class="inc" aria-label="Mais">+</button>
+          </div>
+          <button class="remove" aria-label="Remover ${it.name}">×</button>
+        </div>`;
       li.querySelector('input').addEventListener('change', e => { state.checked[it.id] = e.target.checked; save(); render(); });
       li.querySelector('.dec').addEventListener('click', () => { state.qty[it.id] = Math.max(1, it.qty - 1); save(); render(); });
       li.querySelector('.inc').addEventListener('click', () => { state.qty[it.id] = Math.min(99, it.qty + 1); save(); render(); });
@@ -214,6 +213,7 @@ function render() {
     }
     if (!items.length) { const d = document.createElement('div'); d.className = 'empty'; d.textContent = 'Nada aqui.'; box.appendChild(d); }
     box.appendChild(ul);
+
     const foot = document.createElement('footer'); foot.className = 'add';
     foot.innerHTML = `<span class="plus" aria-hidden="true">+</span><input placeholder="Adicionar item" enterkeyhint="done" autocapitalize="none"><button disabled>Adicionar</button>`;
     const inp = foot.querySelector('input');
@@ -237,12 +237,8 @@ function render() {
 }
 
 // ---------- eventos ----------
-function setAllVisible(val) {
-  for (const g of GROUPS) for (const it of itemsOf(g)) { if (val) state.checked[it.id] = true; else delete state.checked[it.id]; }
-  save(); render();
-}
-document.getElementById('check-all').addEventListener('click', () => setAllVisible(true));
-document.getElementById('uncheck-all').addEventListener('click', () => setAllVisible(false));
+document.getElementById('check-all').addEventListener('click', () => setChecked(GROUPS.flatMap(itemsOf), true));
+document.getElementById('uncheck-all').addEventListener('click', () => setChecked(GROUPS.flatMap(itemsOf), false));
 document.getElementById('restore').addEventListener('click', () => { state.removed = {}; save(); render(); });
 
 render();
