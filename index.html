@@ -41,6 +41,9 @@
   .bar { height: 4px; background: var(--fill); border-radius: 2px; overflow: hidden; margin: 8px 0 16px; }
   .bar > div { height: 100%; background: var(--blue); width: 0; transition: width .25s ease; border-radius: 2px; }
 
+  .seg { display: inline-flex; background: var(--fill); border-radius: 9px; padding: 2px; margin: 0 0 12px; }
+  .seg button { border: 0; background: none; color: var(--text); font: inherit; font-size: 13px; font-weight: 500; padding: 0 16px; min-height: 28px; border-radius: 7px; cursor: pointer; }
+  .seg button[aria-pressed="true"] { background: var(--card); font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,.12); }
   .actions { display: flex; gap: 20px; margin: 0 4px 16px; }
   .actions button { border: 0; background: none; color: var(--blue); font: inherit; font-size: 15px; padding: 0; min-height: 32px; cursor: pointer; }
   .actions button:active { opacity: .5; }
@@ -97,6 +100,11 @@
   </header>
   <div class="bar"><div id="bar"></div></div>
 
+  <div class="seg" role="group" aria-label="Perfil">
+    <button data-profile="homem">Homem</button>
+    <button data-profile="mulher">Mulher</button>
+  </div>
+
   <div class="actions">
     <button id="check-all">Marcar tudo</button>
     <button id="uncheck-all">Desmarcar tudo</button>
@@ -108,29 +116,51 @@
 
 <script>
 // ---------- dados: [nome, quantidade padrão] ----------
-const GROUPS = [
-  { id: 'documentos', title: 'Documentos', icon: '🪪', tint: 'var(--c-blue)', items: [
-    ['passaporte'], ['RG ou CNH'], ['cartão de crédito'], ['cartão de débito'], ['cartão internacional habilitado'],
-    ['seguro viagem'], ['comprovante de vacina internacional'], ['carteira'], ['dinheiro em espécie'],
-  ]},
-  { id: 'roupas', title: 'Roupas', icon: '👕', tint: 'var(--c-purple)', items: [
-    ['cueca', 7], ['meia', 7], ['camisa', 5], ['calça', 2], ['bermuda', 2], ['sunga', 1],
-    ['blusa de frio', 2], ['calça para frio', 1], ['boné', 1], ['chinelo', 1], ['tênis apropriado (academia, passear)', 1],
-  ]},
-  { id: 'eletronicos', title: 'Eletrônicos', icon: '🔌', tint: 'var(--c-orange)', items: [
-    ['notebook'], ['carregador do notebook'], ['celular'], ['carregador do celular'], ['relógio'], ['carregador do relógio'],
-    ['power bank carregado'], ['fones de ouvido carregados'], ['Kindle carregado'], ['adaptador global + GaN'],
-  ]},
-  { id: 'higiene', title: 'Higiene e saúde', icon: '🧴', tint: 'var(--c-green)', items: [
-    ['escova de dente'], ['pasta de dente'], ['fio dental'], ['desodorante'], ['shampoo e condicionador'], ['perfume'],
-    ['produtos de beleza'], ['remédios'], ['suplementos vitamínicos'], ['cotonete'], ['cortador de unha'],
-    ['protetor solar'], ['lenço umedecido'], ['kit de primeiros socorros'],
-  ]},
-  { id: 'diversos', title: 'Diversos', icon: '🎒', tint: 'var(--c-pink)', items: [
-    ['óculos'], ['garrafa de água'], ['caderno de anotações'], ['caneta'],
-    ['apps offline (mapa, tradutor, reservas)'], ['internet no lugar de destino'],
-  ]},
+const DOCUMENTOS = [
+  ['passaporte'], ['RG ou CNH'], ['cartão de crédito'], ['cartão de débito'], ['cartão internacional habilitado'],
+  ['seguro viagem'], ['comprovante de vacina internacional'], ['carteira'], ['dinheiro em espécie'],
 ];
+const ELETRONICOS = [
+  ['notebook'], ['carregador do notebook'], ['celular'], ['carregador do celular'], ['relógio'], ['carregador do relógio'],
+  ['power bank carregado'], ['fones de ouvido carregados'], ['Kindle carregado'], ['adaptador global + GaN'],
+];
+const DIVERSOS = [
+  ['óculos'], ['garrafa de água'], ['caderno de anotações'], ['caneta'],
+  ['apps offline (mapa, tradutor, reservas)'], ['internet no lugar de destino'],
+];
+const PROFILES = {
+  homem: [
+    { id: 'documentos', title: 'Documentos', icon: '🪪', tint: 'var(--c-blue)', items: DOCUMENTOS },
+    { id: 'roupas', title: 'Roupas', icon: '👕', tint: 'var(--c-purple)', items: [
+      ['cueca', 7], ['meia', 7], ['camisa', 5], ['calça', 2], ['bermuda', 2], ['sunga', 1],
+      ['blusa de frio', 2], ['calça para frio', 1], ['boné', 1], ['chinelo', 1], ['tênis apropriado (academia, passear)', 1],
+    ]},
+    { id: 'eletronicos', title: 'Eletrônicos', icon: '🔌', tint: 'var(--c-orange)', items: ELETRONICOS },
+    { id: 'higiene', title: 'Higiene e saúde', icon: '🧴', tint: 'var(--c-green)', items: [
+      ['escova de dente'], ['pasta de dente'], ['fio dental'], ['desodorante'], ['shampoo e condicionador'], ['perfume'],
+      ['produtos de beleza'], ['remédios'], ['suplementos vitamínicos'], ['cotonete'], ['cortador de unha'],
+      ['protetor solar'], ['lenço umedecido'], ['kit de primeiros socorros'],
+    ]},
+    { id: 'diversos', title: 'Diversos', icon: '🎒', tint: 'var(--c-pink)', items: DIVERSOS },
+  ],
+  mulher: [
+    { id: 'documentos', title: 'Documentos', icon: '🪪', tint: 'var(--c-blue)', items: DOCUMENTOS },
+    { id: 'roupas', title: 'Roupas', icon: '👗', tint: 'var(--c-purple)', items: [
+      ['calcinha', 7], ['sutiã', 4], ['meia', 5], ['blusa', 5], ['calça', 2], ['short', 2], ['vestido', 2], ['saia', 1],
+      ['biquíni', 2], ['pijama', 1], ['roupa de academia', 3], ['blusa de frio', 2], ['legging térmica', 1],
+      ['chapéu ou boné', 1], ['chinelo', 1], ['sandália', 1], ['tênis apropriado (academia, passear)', 1],
+    ]},
+    { id: 'eletronicos', title: 'Eletrônicos', icon: '🔌', tint: 'var(--c-orange)', items: [...ELETRONICOS, ['secador ou chapinha de viagem (bivolt)']] },
+    { id: 'higiene', title: 'Higiene e saúde', icon: '🧴', tint: 'var(--c-green)', items: [
+      ['escova de dente'], ['pasta de dente'], ['fio dental'], ['desodorante'], ['shampoo e condicionador'], ['perfume'],
+      ['maquiagem'], ['demaquilante'], ['hidratante facial'], ['hidratante corporal'], ['protetor solar'],
+      ['absorventes ou coletor menstrual'], ['remédios de uso contínuo'], ['suplementos vitamínicos'],
+      ['escova de cabelo'], ['elásticos e grampos de cabelo'], ['lâmina de depilar'], ['cotonete'], ['cortador de unha'],
+      ['lenço umedecido'], ['kit de primeiros socorros'],
+    ]},
+    { id: 'diversos', title: 'Diversos', icon: '👜', tint: 'var(--c-pink)', items: [...DIVERSOS, ['bolsa pequena ou pochete'], ['bijuterias']] },
+  ],
+};
 
 // ---------- plural PT-BR ----------
 const PLURAL_EXC = { 'boné': 'bonés', 'cachecol': 'cachecóis', 'short': 'shorts',
@@ -139,7 +169,10 @@ const PLURAL_EXC = { 'boné': 'bonés', 'cachecol': 'cachecóis', 'short': 'shor
   'shampoo e condicionador': 'shampoos e condicionadores', 'produtos de beleza': 'produtos de beleza', 'remédios': 'remédios',
   'suplementos vitamínicos': 'suplementos vitamínicos', 'fones de ouvido carregados': 'fones de ouvido carregados',
   'dinheiro em espécie': 'dinheiro em espécie', 'adaptador global + GaN': 'adaptadores globais + GaN',
-  'internet no lugar de destino': 'internet no lugar de destino' };
+  'internet no lugar de destino': 'internet no lugar de destino', 'sutiã': 'sutiãs', 'biquíni': 'biquínis', 'legging térmica': 'leggings térmicas',
+  'chapéu ou boné': 'chapéus ou bonés', 'absorventes ou coletor menstrual': 'absorventes ou coletor menstrual', 'remédios de uso contínuo': 'remédios de uso contínuo',
+  'elásticos e grampos de cabelo': 'elásticos e grampos de cabelo', 'bijuterias': 'bijuterias', 'maquiagem': 'maquiagens',
+  'secador ou chapinha de viagem (bivolt)': 'secadores ou chapinhas de viagem (bivolt)', 'bolsa pequena ou pochete': 'bolsas pequenas ou pochetes' };
 function pluralWord(w) {
   if (/ão$/.test(w)) return w.replace(/ão$/, 'ões');
   if (/[rz]$/.test(w)) return w + 'es';
@@ -159,12 +192,19 @@ function plural(name) {
 }
 const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
 
-// ---------- estado ----------
+// ---------- estado (por perfil) ----------
 const KEY = 'checklist-mala:v3';
-const defaultState = () => ({ checked: {}, removed: {}, custom: {}, qty: {} });
-let state = defaultState();
-try { const saved = JSON.parse(localStorage.getItem(KEY)); if (saved) state = { ...defaultState(), ...saved }; } catch (e) {}
-function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
+const emptyProfile = () => ({ checked: {}, removed: {}, custom: {}, qty: {} });
+let root = { profile: 'homem', homem: emptyProfile(), mulher: emptyProfile() };
+try {
+  const saved = JSON.parse(localStorage.getItem(KEY));
+  if (saved && saved.checked) root.homem = { ...emptyProfile(), ...saved };      // formato antigo, sem perfil
+  else if (saved) root = { ...root, ...saved, homem: { ...emptyProfile(), ...(saved.homem || {}) }, mulher: { ...emptyProfile(), ...(saved.mulher || {}) } };
+} catch (e) {}
+let state = root[root.profile];
+const GROUPS = () => PROFILES[root.profile];
+function save() { try { localStorage.setItem(KEY, JSON.stringify(root)); } catch (e) {} }
+function setProfile(p) { root.profile = p; state = root[p]; save(); render(); }
 
 function itemsOf(group) {
   const base = group.items.map(([name, qty]) => ({ id: group.id + ':' + name, name, defaultQty: qty || 1 }));
@@ -189,7 +229,8 @@ function render() {
   document.getElementById('restore').hidden = !Object.keys(state.removed).length;
   let total = 0, done = 0;
   groupsEl.innerHTML = '';
-  for (const g of GROUPS) {
+  document.querySelectorAll('.seg button').forEach(b => b.setAttribute('aria-pressed', b.dataset.profile === root.profile));
+  for (const g of GROUPS()) {
     const items = itemsOf(g);
     const doneHere = items.filter(i => state.checked[i.id]).length;
     const allDone = items.length > 0 && doneHere === items.length;
@@ -250,8 +291,9 @@ function render() {
 }
 
 // ---------- eventos ----------
-document.getElementById('check-all').addEventListener('click', () => setChecked(GROUPS.flatMap(itemsOf), true));
-document.getElementById('uncheck-all').addEventListener('click', () => setChecked(GROUPS.flatMap(itemsOf), false));
+document.getElementById('check-all').addEventListener('click', () => setChecked(GROUPS().flatMap(itemsOf), true));
+document.getElementById('uncheck-all').addEventListener('click', () => setChecked(GROUPS().flatMap(itemsOf), false));
+document.querySelectorAll('.seg button').forEach(b => b.addEventListener('click', () => setProfile(b.dataset.profile)));
 document.getElementById('restore').addEventListener('click', () => { state.removed = {}; save(); render(); });
 
 render();
