@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Mala">
-<title>Checklist da Mala</title>
+<title>Mala Nômade</title>
 <style>
   :root {
     --bg: #F2F2F7; --card: #FFFFFF; --text: #000000; --secondary: #3C3C43; --muted: rgba(60,60,67,.6);
@@ -38,6 +38,11 @@
   .bar { height: 4px; background: var(--fill); border-radius: 2px; overflow: hidden; margin-bottom: 20px; }
   .bar > div { height: 100%; background: var(--blue); width: 0; transition: width .25s ease; border-radius: 2px; }
 
+  .stepper { flex: none; display: inline-flex; align-items: center; background: var(--fill); border-radius: 8px; height: 30px; }
+  .stepper button { width: 32px; height: 30px; border: 0; background: none; color: var(--blue); font: inherit; font-size: 19px; line-height: 1; cursor: pointer; }
+  .stepper button:disabled { color: var(--muted); opacity: .4; }
+  .stepper button:active { opacity: .5; }
+  .stepper output { min-width: 26px; text-align: center; font-size: 15px; font-weight: 600; font-variant-numeric: tabular-nums; }
   .controls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 16px; }
   .days { display: flex; align-items: center; gap: 8px; background: var(--card); border-radius: 10px;
     padding: 0 6px 0 14px; min-height: 44px; font-size: 17px; }
@@ -62,7 +67,7 @@
   section h2 span { text-transform: none; font-variant-numeric: tabular-nums; }
   .group { background: var(--card); border-radius: var(--radius); overflow: hidden; }
   ul { list-style: none; margin: 0; padding: 0; }
-  li { display: flex; align-items: center; gap: 12px; min-height: 44px; padding: 0 16px 0 16px; position: relative; }
+  li { display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 16px 0 16px; position: relative; }
   li + li::before, footer.add::before { content: ""; position: absolute; left: 52px; right: 0; top: 0; height: 1px; background: var(--sep); }
   li input[type=checkbox] { position: absolute; opacity: 0; width: 1px; height: 1px; }
   .check { flex: none; width: 24px; height: 24px; border-radius: 50%; border: 1.5px solid var(--muted); display: grid;
@@ -94,18 +99,10 @@
 <body>
 <main>
   <header>
-    <h1>Mala</h1>
+    <h1>Mala Nômade</h1>
     <div class="progress" id="progress">0 de 0</div>
   </header>
   <div class="bar"><div id="bar"></div></div>
-
-  <div class="controls">
-    <div class="days"><span>Dias</span><input id="days" type="number" min="1" max="90" inputmode="numeric"></div>
-    <button class="toggle" data-cond="frio">🥶 Frio</button>
-    <button class="toggle" data-cond="calor">😎 Calor</button>
-    <button class="toggle" data-cond="exterior">🌍 Exterior</button>
-    <button class="toggle" data-cond="aventura">🏕️ Aventura</button>
-  </div>
 
   <div class="actions">
     <button id="check-all">Marcar tudo</button>
@@ -117,54 +114,45 @@
 </main>
 
 <script>
-// ---------- dados ----------
-// rule: 'day' = 1 por dia; 'every:N' = 1 a cada N dias; 'fixed' = quantidade fixa (default 1)
+// ---------- dados: [nome, quantidade padrão] ----------
 const GROUPS = [
-  { id: 'roupas', title: 'Roupas', cond: null, kind: 'roupa', items: [
-    ['cueca', 'day'], ['meia', 'day'], ['camisa', 'day'], ['calça', 'every:3'],
-    ['pijama', 'fixed'], ['roupa de academia', 'every:2'], ['sapato', 'fixed'], ['sandália', 'fixed'],
+  { id: 'documentos', title: 'Documentos', items: [
+    ['passaporte'], ['RG ou CNH'], ['cartão de crédito'], ['cartão de débito'], ['cartão internacional habilitado'],
+    ['seguro viagem'], ['comprovante de vacina internacional'], ['carteira'], ['dinheiro em espécie'],
   ]},
-  { id: 'documentos', title: 'Documentos', cond: null, kind: 'unico', items: [
-    ['passaporte'], ['RG ou CNH'], ['cartão de crédito'], ['cartão de débito'],
-    ['passagens e reservas (offline)'], ['carteira'],
+  { id: 'roupas', title: 'Roupas', items: [
+    ['cueca', 7], ['meia', 7], ['camisa', 7], ['calça', 3], ['short', 3], ['bermuda', 2], ['sunga', 1],
+    ['pijama', 1], ['roupa de academia', 3], ['blusa de frio', 2], ['calça para frio', 1], ['touca', 1], ['cachecol', 1],
+    ['boné', 1], ['sapato', 1], ['tênis apropriado (trekking, corrida)', 1], ['sandália', 1], ['chinelo', 1],
+    ['capa de chuva ou corta-vento', 1],
   ]},
-  { id: 'essenciais', title: 'Essenciais', cond: null, kind: 'unico', items: [
-    ['relógio'], ['óculos'], ['notebook'], ['carregador do notebook'], ['celular'],
-    ['carregador do celular'], ['carregador do relógio'], ['power bank carregado'],
-    ['fones de ouvido carregados'], ['Kindle carregado'], ['livro'], ['caderno de anotações'], ['caneta'],
-    ['baralho'], ['escova de dente'], ['pasta de dente'], ['fio dental'], ['desodorante'],
-    ['shampoo e condicionador'], ['perfume'], ['produtos de beleza'], ['remédios'],
-    ['suplementos vitamínicos'], ['cotonete'], ['cortador de unha'], ['garrafa de água'],
-    ['travesseiro de pescoço'],
+  { id: 'eletronicos', title: 'Eletrônicos', items: [
+    ['notebook'], ['carregador do notebook'], ['celular'], ['carregador do celular'], ['relógio'], ['carregador do relógio'],
+    ['power bank carregado'], ['fones de ouvido carregados'], ['Kindle carregado'], ['adaptador de tomada'],
   ]},
-  { id: 'frio', title: 'Frio', cond: 'frio', kind: 'misto', items: [
-    ['blusa de frio', 'every:3', 'roupa'], ['calça para frio', 'every:3', 'roupa'],
-    ['touca', 'fixed', 'roupa'], ['cachecol', 'fixed', 'roupa'], ['guarda-chuva (vento e garoa também contam)'],
+  { id: 'higiene', title: 'Higiene e saúde', items: [
+    ['escova de dente'], ['pasta de dente'], ['fio dental'], ['desodorante'], ['shampoo e condicionador'], ['perfume'],
+    ['produtos de beleza'], ['remédios'], ['suplementos vitamínicos'], ['cotonete'], ['cortador de unha'],
+    ['protetor solar'], ['repelente'], ['lenço umedecido'], ['kit de primeiros socorros'],
   ]},
-  { id: 'calor', title: 'Calor', cond: 'calor', kind: 'misto', items: [
-    ['short', 'every:2', 'roupa'], ['bermuda', 'every:2', 'roupa'], ['sunga', 'fixed', 'roupa'],
-    ['boné', 'fixed', 'roupa'], ['chinelo', 'fixed', 'roupa'],
-    ['protetor solar'], ['repelente'], ['lenço umedecido'],
-  ]},
-  { id: 'exterior', title: 'Exterior', cond: 'exterior', kind: 'unico', items: [
-    ['adaptador de tomada'], ['cartão internacional habilitado'], ['seguro viagem'],
-    ['comprovante de vacina internacional'], ['apps offline (mapa, tradutor, reservas)'], ['dinheiro em espécie'],
-  ]},
-  { id: 'aventura', title: 'Aventura', cond: 'aventura', kind: 'misto', items: [
-    ['tênis apropriado (trekking, corrida)', 'fixed', 'roupa'], ['roupa extra de academia ou confortável', 'every:2', 'roupa'],
-    ['mochila leve'], ['kit de primeiros socorros'], ['lanterna (headlamp de preferência)'],
-    ['snacks'], ['toalha de secagem rápida'], ['capa de chuva ou corta-vento'],
+  { id: 'diversos', title: 'Diversos', items: [
+    ['óculos'], ['garrafa de água'], ['livro'], ['caderno de anotações'], ['caneta'], ['baralho'],
+    ['travesseiro de pescoço'], ['mochila leve'], ['guarda-chuva'], ['lanterna (headlamp de preferência)'],
+    ['toalha de secagem rápida'], ['snacks'], ['apps offline (mapa, tradutor, reservas)'],
   ]},
 ];
 
 // ---------- plural PT-BR ----------
-const PLURAL_EXC = { 'boné': 'bonés', 'cachecol': 'cachecóis', 'chinelo': 'chinelos', 'short': 'shorts',
-  'sapato': 'sapatos', 'pijama': 'pijamas', 'blusa de frio': 'blusas de frio', 'calça para frio': 'calças para frio',
-  'roupa de academia': 'roupas de academia', 'roupa extra de academia ou confortável': 'roupas extras de academia ou confortáveis',
-  'tênis apropriado (trekking, corrida)': 'tênis apropriados (trekking, corrida)' };
+const PLURAL_EXC = { 'boné': 'bonés', 'cachecol': 'cachecóis', 'short': 'shorts', 'tênis apropriado (trekking, corrida)': 'tênis apropriados (trekking, corrida)',
+  'roupa de academia': 'roupas de academia', 'capa de chuva ou corta-vento': 'capas de chuva ou corta-ventos', 'RG ou CNH': 'RG ou CNH',
+  'apps offline (mapa, tradutor, reservas)': 'apps offline (mapa, tradutor, reservas)', 'snacks': 'snacks', 'óculos': 'óculos',
+  'shampoo e condicionador': 'shampoos e condicionadores', 'produtos de beleza': 'produtos de beleza', 'remédios': 'remédios',
+  'suplementos vitamínicos': 'suplementos vitamínicos', 'fones de ouvido carregados': 'fones de ouvido carregados',
+  'dinheiro em espécie': 'dinheiro em espécie' };
 function pluralWord(w) {
-  if (/[ãõ]o$/.test(w)) return w.replace(/ão$/, 'ões');
-  if (/(r|z|s)$/.test(w)) return /s$/.test(w) && !/[aeiou]s$/.test(w) ? w : w + 'es';
+  if (/ão$/.test(w)) return w.replace(/ão$/, 'ões');
+  if (/[rz]$/.test(w)) return w + 'es';
+  if (/s$/.test(w)) return w;
   if (/m$/.test(w)) return w.slice(0, -1) + 'ns';
   if (/al$/.test(w)) return w.slice(0, -2) + 'ais';
   if (/el$/.test(w)) return w.slice(0, -2) + 'éis';
@@ -174,45 +162,32 @@ function pluralWord(w) {
 }
 function plural(name) {
   if (PLURAL_EXC[name]) return PLURAL_EXC[name];
-  const m = /^(.*?)(\s(?:de|da|do|para|pra|com|ou)\s.*)$/.exec(name);
+  const m = /^(.*?)(\s(?:de|da|do|para|pra|com|ou|em)\s.*|\s\(.*)$/.exec(name);
   const head = m ? m[1] : name, tail = m ? m[2] : '';
   return head.split(' ').map(pluralWord).join(' ') + tail;
 }
 const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
 
 // ---------- estado ----------
-const KEY = 'checklist-mala:v1';
-const defaultState = () => ({ days: 5, conds: {}, checked: {}, removed: {}, custom: {} });
+const KEY = 'checklist-mala:v2';
+const defaultState = () => ({ checked: {}, removed: {}, custom: {}, qty: {} });
 let state = defaultState();
 try { const saved = JSON.parse(localStorage.getItem(KEY)); if (saved) state = { ...defaultState(), ...saved }; } catch (e) {}
 function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
 
-function qtyFor(rule, days) {
-  if (!rule || rule === 'fixed') return 1;
-  if (rule === 'day') return days;
-  const m = /^every:(\d+)$/.exec(rule);
-  if (m) return Math.max(1, Math.ceil(days / Number(m[1])));
-  return 1;
-}
-
 function itemsOf(group) {
-  const base = group.items.map(([name, rule, kind]) => ({
-    id: group.id + ':' + name, name, rule, kind: kind || (group.kind === 'roupa' ? 'roupa' : 'unico'), custom: false }));
-  const custom = (state.custom[group.id] || []).map(c => ({ id: group.id + ':' + c.name, name: c.name, rule: c.rule, kind: c.kind, custom: true }));
-  return [...base, ...custom].filter(it => !state.removed[it.id]);
+  const base = group.items.map(([name, qty]) => ({ id: group.id + ':' + name, name, defaultQty: qty || 1 }));
+  const custom = (state.custom[group.id] || []).map(c => ({ id: group.id + ':' + c.name, name: c.name, defaultQty: 1, custom: true }));
+  return [...base, ...custom].filter(it => !state.removed[it.id]).map(it => ({ ...it, qty: state.qty[it.id] ?? it.defaultQty }));
 }
-function visibleGroups() { return GROUPS.filter(g => !g.cond || state.conds[g.cond]); }
 
 // ---------- render ----------
 const groupsEl = document.getElementById('groups');
 function render() {
-  document.getElementById('days').value = state.days;
-  document.querySelectorAll('.toggle').forEach(b => b.setAttribute('aria-pressed', !!state.conds[b.dataset.cond]));
   document.getElementById('restore').hidden = !Object.keys(state.removed).length;
-
   let total = 0, done = 0;
   groupsEl.innerHTML = '';
-  for (const g of visibleGroups()) {
+  for (const g of GROUPS) {
     const items = itemsOf(g);
     const sec = document.createElement('section');
     const doneHere = items.filter(i => state.checked[i.id]).length;
@@ -221,30 +196,31 @@ function render() {
     const box = document.createElement('div'); box.className = 'group';
     const ul = document.createElement('ul');
     for (const it of items) {
-      const qty = it.kind === 'roupa' ? qtyFor(it.rule, state.days) : null;
-      const label = qty && qty > 1 ? plural(it.name) : it.name;
+      const label = it.qty > 1 ? plural(it.name) : it.name;
       const li = document.createElement('li');
       li.className = state.checked[it.id] ? 'done' : '';
       const cid = 'c-' + it.id.replace(/[^\w-]/g, '_');
       li.innerHTML = `<input type="checkbox" id="${cid}" ${state.checked[it.id] ? 'checked' : ''}>
-        <label for="${cid}"><span class="check" aria-hidden="true"></span><span class="name">${qty ? `<span class="qty">${qty}</span> ` : ''}${cap(label)}</span></label>
+        <label for="${cid}"><span class="check" aria-hidden="true"></span><span class="name">${cap(label)}</span></label>
+        <div class="stepper" aria-label="Quantidade de ${it.name}">
+          <button class="dec" aria-label="Menos" ${it.qty <= 1 ? 'disabled' : ''}>−</button><output>${it.qty}</output><button class="inc" aria-label="Mais">+</button>
+        </div>
         <button class="remove" aria-label="Remover ${it.name}">×</button>`;
       li.querySelector('input').addEventListener('change', e => { state.checked[it.id] = e.target.checked; save(); render(); });
+      li.querySelector('.dec').addEventListener('click', () => { state.qty[it.id] = Math.max(1, it.qty - 1); save(); render(); });
+      li.querySelector('.inc').addEventListener('click', () => { state.qty[it.id] = Math.min(99, it.qty + 1); save(); render(); });
       li.querySelector('.remove').addEventListener('click', () => { state.removed[it.id] = true; save(); render(); });
       ul.appendChild(li);
     }
     if (!items.length) { const d = document.createElement('div'); d.className = 'empty'; d.textContent = 'Nada aqui.'; box.appendChild(d); }
     box.appendChild(ul);
     const foot = document.createElement('footer'); foot.className = 'add';
-    const isRoupa = g.kind === 'roupa';
-    foot.innerHTML = `<span class="plus" aria-hidden="true">+</span><input placeholder="${isRoupa ? 'Adicionar roupa (1 por dia)' : 'Adicionar item'}" enterkeyhint="done" autocapitalize="none"><button disabled>Adicionar</button>`;
+    foot.innerHTML = `<span class="plus" aria-hidden="true">+</span><input placeholder="Adicionar item" enterkeyhint="done" autocapitalize="none"><button disabled>Adicionar</button>`;
     const inp = foot.querySelector('input');
     inp.addEventListener('input', () => { foot.querySelector('button').disabled = !inp.value.trim(); });
     const add = () => {
       const name = inp.value.trim().toLowerCase(); if (!name) return;
-      const kind = isRoupa ? 'roupa' : 'unico';
-      const rule = isRoupa ? 'day' : 'fixed';
-      state.custom[g.id] = (state.custom[g.id] || []).filter(c => c.name !== name).concat([{ name, rule, kind }]);
+      state.custom[g.id] = (state.custom[g.id] || []).filter(c => c.name !== name).concat([{ name }]);
       delete state.removed[g.id + ':' + name];
       save(); render();
       groupsEl.querySelector(`[data-focus="${g.id}"]`)?.focus();
@@ -261,14 +237,8 @@ function render() {
 }
 
 // ---------- eventos ----------
-document.getElementById('days').addEventListener('input', e => {
-  const v = parseInt(e.target.value, 10); if (v >= 1) { state.days = v; save(); render(); }
-});
-document.querySelectorAll('.toggle').forEach(b => b.addEventListener('click', () => {
-  state.conds[b.dataset.cond] = !state.conds[b.dataset.cond]; save(); render();
-}));
 function setAllVisible(val) {
-  for (const g of visibleGroups()) for (const it of itemsOf(g)) { if (val) state.checked[it.id] = true; else delete state.checked[it.id]; }
+  for (const g of GROUPS) for (const it of itemsOf(g)) { if (val) state.checked[it.id] = true; else delete state.checked[it.id]; }
   save(); render();
 }
 document.getElementById('check-all').addEventListener('click', () => setAllVisible(true));
