@@ -46,7 +46,8 @@
   .actions button:active { opacity: .5; }
   .actions button.quiet { color: var(--muted); }
 
-  #groups { display: grid; gap: 20px; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); align-items: start; }
+  #groups { columns: 320px; column-gap: 20px; }
+  section { break-inside: avoid; margin-bottom: 20px; }
   section { --tint: var(--blue); }
   section h2 { font-size: 15px; font-weight: 600; margin: 0 0 8px; padding: 0 4px; display: flex; align-items: center; gap: 10px; }
   section h2 .icon { width: 30px; height: 30px; border-radius: 8px; background: var(--tint); color: #fff; display: grid; place-items: center; font-size: 16px; flex: none; }
