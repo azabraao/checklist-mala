@@ -55,7 +55,8 @@
   #groups .col { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 20px; }
   section { --tint: var(--blue); }
   section h2 { font-size: 15px; font-weight: 600; margin: 0 0 8px; padding: 0 4px; display: flex; align-items: center; gap: 10px; }
-  section h2 .icon { width: 30px; height: 30px; border-radius: 8px; background: var(--tint); color: #fff; display: grid; place-items: center; font-size: 16px; flex: none; }
+  section h2 .icon { width: 30px; height: 30px; border-radius: 8px; background: var(--tint); color: #fff; display: grid; place-items: center; flex: none; }
+  section h2 .icon svg { display: block; }
   section h2 .title { flex: 1; }
   section h2 .count { font-size: 13px; font-weight: 400; color: var(--muted); font-variant-numeric: tabular-nums; }
   section h2 .all { border: 0; background: none; padding: 0 4px; cursor: pointer; display: flex; align-items: center; min-height: 32px; }
@@ -116,6 +117,18 @@
 </main>
 
 <script>
+// ---------- ícones (SVG monocromático, estilo SF Symbols) ----------
+const SVG = (d, extra = '') => `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}${extra}</svg>`;
+const ICONS = {
+  card: SVG('<rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8.5" cy="11" r="2"/><path d="M5.5 16.5c.6-1.6 1.7-2.4 3-2.4s2.4.8 3 2.4M14 10h4M14 14h4"/>'),
+  shirt: SVG('<path d="M8 4l4 2 4-2 5 3-2 4-2-1v10H7V10l-2 1-2-4z"/>'),
+  dress: SVG('<path d="M8 3l1.5 5.5L8 10l-4 11h16l-4-11-1.5-1.5L16 3"/><path d="M8 3c0 2.2 1.6 3.5 4 3.5S16 5.2 16 3"/>'),
+  bolt: SVG('<path d="M13 2L4 14h7l-1 8 9-12h-7z"/>'),
+  drop: SVG('<path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"/>'),
+  bag: SVG('<path d="M6 8h12l1 13H5z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/>'),
+  handbag: SVG('<path d="M4 9h16l-1.5 11h-13z"/><path d="M8 9V7a4 4 0 0 1 8 0v2"/>'),
+};
+
 // ---------- dados: [nome, quantidade padrão] ----------
 const DOCUMENTOS = [
   ['passaporte'], ['RG ou CNH'], ['cartão de crédito'], ['cartão de débito'], ['cartão internacional habilitado'],
@@ -131,35 +144,35 @@ const DIVERSOS = [
 ];
 const PROFILES = {
   homem: [
-    { id: 'documentos', title: 'Documentos', icon: '🪪', tint: 'var(--c-blue)', items: DOCUMENTOS },
-    { id: 'roupas', title: 'Roupas', icon: '👕', tint: 'var(--c-purple)', items: [
+    { id: 'documentos', title: 'Documentos', icon: 'card', tint: 'var(--c-blue)', items: DOCUMENTOS },
+    { id: 'roupas', title: 'Roupas', icon: 'shirt', tint: 'var(--c-purple)', items: [
       ['cueca', 7], ['meia', 7], ['camisa', 5], ['calça', 2], ['bermuda', 2], ['sunga', 1],
       ['blusa de frio', 2], ['calça para frio', 1], ['boné', 1], ['chinelo', 1], ['tênis apropriado (academia, passear)', 1],
     ]},
-    { id: 'eletronicos', title: 'Eletrônicos', icon: '🔌', tint: 'var(--c-orange)', items: ELETRONICOS },
-    { id: 'higiene', title: 'Higiene e saúde', icon: '🧴', tint: 'var(--c-green)', items: [
+    { id: 'eletronicos', title: 'Eletrônicos', icon: 'bolt', tint: 'var(--c-orange)', items: ELETRONICOS },
+    { id: 'higiene', title: 'Higiene e saúde', icon: 'drop', tint: 'var(--c-green)', items: [
       ['escova de dente'], ['pasta de dente'], ['fio dental'], ['desodorante'], ['shampoo e condicionador'], ['perfume'],
       ['produtos de beleza'], ['remédios'], ['suplementos vitamínicos'], ['cotonete'], ['cortador de unha'],
       ['protetor solar'], ['lenço umedecido'], ['kit de primeiros socorros'],
     ]},
-    { id: 'diversos', title: 'Diversos', icon: '🎒', tint: 'var(--c-pink)', items: DIVERSOS },
+    { id: 'diversos', title: 'Diversos', icon: 'bag', tint: 'var(--c-pink)', items: DIVERSOS },
   ],
   mulher: [
-    { id: 'documentos', title: 'Documentos', icon: '🪪', tint: 'var(--c-blue)', items: DOCUMENTOS },
-    { id: 'roupas', title: 'Roupas', icon: '👗', tint: 'var(--c-purple)', items: [
+    { id: 'documentos', title: 'Documentos', icon: 'card', tint: 'var(--c-blue)', items: DOCUMENTOS },
+    { id: 'roupas', title: 'Roupas', icon: 'dress', tint: 'var(--c-purple)', items: [
       ['calcinha', 7], ['sutiã', 4], ['meia', 5], ['blusa', 5], ['calça', 2], ['short', 2], ['vestido', 2], ['saia', 1],
       ['biquíni', 2], ['pijama', 1], ['roupa de academia', 3], ['blusa de frio', 2], ['legging térmica', 1],
       ['chapéu ou boné', 1], ['chinelo', 1], ['sandália', 1], ['tênis apropriado (academia, passear)', 1],
     ]},
-    { id: 'eletronicos', title: 'Eletrônicos', icon: '🔌', tint: 'var(--c-orange)', items: [...ELETRONICOS, ['secador ou chapinha de viagem (bivolt)']] },
-    { id: 'higiene', title: 'Higiene e saúde', icon: '🧴', tint: 'var(--c-green)', items: [
+    { id: 'eletronicos', title: 'Eletrônicos', icon: 'bolt', tint: 'var(--c-orange)', items: [...ELETRONICOS, ['secador ou chapinha de viagem (bivolt)']] },
+    { id: 'higiene', title: 'Higiene e saúde', icon: 'drop', tint: 'var(--c-green)', items: [
       ['escova de dente'], ['pasta de dente'], ['fio dental'], ['desodorante'], ['shampoo e condicionador'], ['perfume'],
       ['maquiagem'], ['demaquilante'], ['hidratante facial'], ['hidratante corporal'], ['protetor solar'],
       ['absorventes ou coletor menstrual'], ['remédios de uso contínuo'], ['suplementos vitamínicos'],
       ['escova de cabelo'], ['elásticos e grampos de cabelo'], ['lâmina de depilar'], ['cotonete'], ['cortador de unha'],
       ['lenço umedecido'], ['kit de primeiros socorros'],
     ]},
-    { id: 'diversos', title: 'Diversos', icon: '👜', tint: 'var(--c-pink)', items: [...DIVERSOS, ['bolsa pequena ou pochete'], ['bijuterias']] },
+    { id: 'diversos', title: 'Diversos', icon: 'handbag', tint: 'var(--c-pink)', items: [...DIVERSOS, ['bolsa pequena ou pochete'], ['bijuterias']] },
   ],
 };
 
@@ -246,7 +259,7 @@ function render() {
 
     const sec = document.createElement('section');
     sec.style.setProperty('--tint', g.tint);
-    sec.innerHTML = `<h2><span class="icon" aria-hidden="true">${g.icon}</span><span class="title">${g.title}</span>
+    sec.innerHTML = `<h2><span class="icon">${ICONS[g.icon]}</span><span class="title">${g.title}</span>
       <span class="count">${doneHere} de ${items.length}</span>
       <button class="all ${allDone ? 'done' : ''}" aria-label="${allDone ? 'Desmarcar' : 'Marcar'} todo o bloco ${g.title}"><span class="check" aria-hidden="true"></span></button></h2>`;
     sec.querySelector('.all').addEventListener('click', () => setChecked(items, !allDone));
