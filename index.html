@@ -46,7 +46,7 @@
   .actions button:active { opacity: .5; }
   .actions button.quiet { color: var(--muted); }
 
-  #groups { display: grid; gap: 20px; }
+  #groups { display: grid; gap: 20px; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); align-items: start; }
   section { --tint: var(--blue); }
   section h2 { font-size: 15px; font-weight: 600; margin: 0 0 8px; padding: 0 4px; display: flex; align-items: center; gap: 10px; }
   section h2 .icon { width: 30px; height: 30px; border-radius: 8px; background: var(--tint); color: #fff; display: grid; place-items: center; font-size: 16px; flex: none; }
@@ -54,8 +54,9 @@
   section h2 .count { font-size: 13px; font-weight: 400; color: var(--muted); font-variant-numeric: tabular-nums; }
   section h2 .all { border: 0; background: none; padding: 0 4px; cursor: pointer; display: flex; align-items: center; min-height: 32px; }
   .group { background: var(--card); border-radius: var(--radius); overflow: hidden; }
-  ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
-  li { position: relative; display: flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 14px; background: var(--card); box-shadow: inset 0 -1px 0 var(--sep), inset -1px 0 0 var(--sep); }
+  ul { list-style: none; margin: 0; padding: 0; }
+  li { position: relative; display: flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 14px; background: var(--card); }
+  li + li { box-shadow: inset 0 1px 0 var(--sep); }
   li input[type=checkbox] { position: absolute; opacity: 0; width: 1px; height: 1px; }
   .check { flex: none; width: 24px; height: 24px; border-radius: 50%; border: 1.5px solid var(--muted); display: grid; place-items: center; transition: background .15s, border-color .15s, transform .1s; }
   .check::after { content: ""; width: 6px; height: 11px; border: solid #fff; border-width: 0 2px 2px 0; transform: rotate(45deg) translate(-1px,-1px); opacity: 0; }
